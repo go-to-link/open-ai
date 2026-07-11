@@ -490,10 +490,9 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
 
         // --- SISTEM RENDER PESAN ---
         function appendMessage(role, text) {
-            if (chatHistory.length === 0) {
-                ui.welcomeScreen.classList.add('hidden');
-                ui.chatContainer.classList.remove('hidden');
-            }
+            // PERBAIKAN BUG: Langsung sembunyikan Welcome Screen & tampilkan Chat tanpa syarat
+            ui.welcomeScreen.classList.add('hidden');
+            ui.chatContainer.classList.remove('hidden');
 
             const msgDiv = document.createElement('div');
             msgDiv.className = `flex gap-4 ${role === 'user' ? 'flex-row-reverse' : ''}`;
