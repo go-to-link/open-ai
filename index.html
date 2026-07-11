@@ -1,319 +1,756 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Neon Snake</title>
+    <title>AI Chat Estafet V2</title>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Variabel CSS untuk kemudahan pengaturan */
-        :root {
-            --grid-size: 20; /* Jumlah kotak per sisi grid */
-            --cell-size: 20px; /* Ukuran setiap kotak */
-            --neon-green: #34D399; /* Tailwind emerald-400 */
-            --dark-bg: #111827; /* Tailwind gray-900 */
-        }
-
         body {
-            font-family: 'Press Start 2P', cursive; /* Font retro pixelated */
-            background-color: var(--dark-bg);
-            color: var(--neon-green);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Custom Scrollbar yang elegan */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.5);
         }
 
-        /* Mengimpor font Google Fonts untuk gaya retro */
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-        /* Gaya untuk container game */
-        #game-container {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-green), 0 0 25px var(--neon-green), 0 0 40px var(--neon-green);
+        /* Markdown Styles untuk hasil AI */
+        .ai-content pre {
+            background: #1e293b !important;
+            color: #f8fafc !important;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-
-        /* Gaya untuk papan game */
-        #game-board {
-            display: grid;
-            grid-template-columns: repeat(var(--grid-size), 1fr);
-            width: calc(var(--grid-size) * var(--cell-size));
-            height: calc(var(--grid-size) * var(--cell-size));
-            background-color: var(--dark-bg);
+        
+        .ai-content code {
+            font-family: monospace;
+            background: rgba(148, 163, 184, 0.2);
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
         }
-
-        /* Gaya untuk setiap sel (kotak) pada papan */
-        .game-cell {
-            width: var(--cell-size);
-            height: var(--cell-size);
-            box-sizing: border-box; /* Pastikan border tidak menambah ukuran total */
-            transition: background-color 0.05s ease-in-out; /* Transisi warna yang halus */
+        
+        .ai-content pre code {
+            background: transparent;
+            padding: 0;
         }
-
-        /* Gaya untuk bagian tubuh ular */
-        .snake-cell {
-            background-color: var(--neon-green);
-            border: 1px solid var(--neon-green); /* Sedikit border untuk definisi */
-            box-shadow: 0 0 5px var(--neon-green);
-        }
-
-        /* Gaya untuk makanan */
-        .food-cell {
-            background-color: #EF4444; /* Merah untuk kontras */
-            border-radius: 50%; /* Membuat makanan bulat */
-            box-shadow: 0 0 8px #EF4444;
-            animation: pulse 1.5s infinite alternate; /* Animasi berdenyut */
-        }
-
-        /* Keyframe untuk animasi berdenyut */
-        @keyframes pulse {
-            from { transform: scale(0.9); }
-            to { transform: scale(1.1); }
-        }
-
-        /* Gaya untuk teks skor dan layar Game Over */
-        #score, #game-over-screen h2, #game-over-screen p, #restart-button {
-            color: var(--neon-green);
-            text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green);
-        }
-
-        #restart-button {
-            background-color: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 8px var(--neon-green);
-        }
-
-        #restart-button:hover {
-            box-shadow: 0 0 15px var(--neon-green), 0 0 25px var(--neon-green);
-            transform: scale(1.05);
+        
+        /* Animasi Pop-up */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen">
-    <div id="game-container" class="relative border-4 rounded-lg shadow-xl p-2 md:p-4">
-        <div id="game-board">
-            <!-- Sel-sel game akan dibuat di sini oleh JavaScript -->
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-500 h-screen flex overflow-hidden selection:bg-violet-500/30">
+
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800/50 flex flex-col transition-all duration-300 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)] hidden md:flex">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-800/50">
+            <button onclick="startNewSession()" class="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                <span>+</span> Obrolan Baru
+            </button>
         </div>
-        <div id="score" class="absolute top-2 left-2 text-xl md:text-2xl">Skor: <span id="current-score">0</span></div>
-        <div id="game-over-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-90 rounded-lg hidden">
-            <h2 class="text-3xl md:text-5xl font-bold mb-4">Game Over!</h2>
-            <p class="text-xl md:text-3xl mb-8">Skor Akhir: <span id="final-score">0</span></p>
-            <button id="restart-button" class="px-6 py-3 md:px-8 md:py-4 text-lg md:text-2xl font-bold rounded-lg transition-all duration-200">Main Lagi</button>
+        
+        <div class="flex-1 overflow-y-auto p-4 space-y-2" id="sessionList">
+            <!-- List sesi obrolan akan muncul di sini -->
+        </div>
+
+        <div class="p-4 border-t border-slate-200 dark:border-slate-800/50 bg-white/30 dark:bg-slate-900/30">
+            <button onclick="openSettings()" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 rounded-xl transition-all">
+                ⚙️ Pengaturan API & Model
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CHAT AREA -->
+    <main class="flex-1 flex flex-col h-full relative bg-slate-50/50 dark:bg-slate-900/20">
+        
+        <!-- HEADER -->
+        <header class="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800/50 bg-white/70 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 transition-colors duration-500">
+            <div class="flex items-center gap-3">
+                <button class="md:hidden text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                    ☰
+                </button>
+                <div class="flex flex-col">
+                    <h1 id="headerModelName" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 tracking-tight transition-all duration-300">
+                        👑 MODE DEWA
+                    </h1>
+                    <span class="text-[10px] font-medium text-slate-500 dark:text-slate-500 uppercase tracking-widest">AI Chat Estafet V2</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors" title="Ganti Tema (Terang/Gelap)">
+                    🌙
+                </button>
+                <!-- Avatar Profil (Sudah disempurnakan berdasarkan masukan Kakak) -->
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 shadow-md flex items-center justify-center text-white text-xs font-bold cursor-help" title="Profil Pengguna">
+                    U
+                </div>
+            </div>
+        </header>
+
+        <!-- CHAT MESSAGES AREA -->
+        <div id="chatArea" class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+            
+            <!-- Welcome Screen -->
+            <div id="welcomeState" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500 px-4">
+                <div class="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl shadow-xl dark:shadow-2xl flex items-center justify-center mb-6 border border-slate-100 dark:border-slate-700/50">
+                    <span class="text-4xl">👑</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-3 tracking-tight">Halo, Arsitek!</h2>
+                <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-10 text-sm md:text-base leading-relaxed">
+                    Sistem Estafet AI telah siap. Gunakan <strong>Quick Actions</strong> di bawah atau ketik langsung instruksi Kakak untuk mulai membangun.
+                </p>
+            </div>
+            
+            <!-- Tempat pesan chat muncul -->
+            <div id="messageList" class="max-w-3xl mx-auto space-y-6 pb-4">
+                <!-- Messages -->
+            </div>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div id="typingIndicator" class="hidden max-w-3xl mx-auto mt-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-600 flex-shrink-0 shadow-md flex items-center justify-center text-white text-xs font-bold">AI</div>
+                    <div class="bg-white dark:bg-slate-800/80 backdrop-blur-sm p-4 rounded-2xl rounded-tl-sm border border-slate-100 dark:border-slate-700/50 shadow-sm flex items-center gap-2">
+                        <div class="w-2 h-2 bg-violet-500 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INPUT AREA -->
+        <div class="p-4 md:p-6 bg-transparent">
+            <div class="max-w-3xl mx-auto relative">
+                
+                <!-- Quick Actions Row (Horizontal Scroll) -->
+                <div class="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide no-scrollbar" style="-ms-overflow-style: none; scrollbar-width: none;">
+                    <button onclick="pasteMantraDewa()" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-500/20 dark:to-fuchsia-500/20 text-violet-700 dark:text-violet-300 hover:from-violet-200 hover:to-fuchsia-200 dark:hover:bg-violet-500/30 text-xs font-semibold rounded-full border border-violet-200 dark:border-violet-500/30 transition-all shadow-sm">
+                        <span>👑</span> Mantra Dewa
+                    </button>
+                    <button onclick="insertPrompt('Tolong periksa kode ini dan perbaiki errornya secara utuh. Jelaskan sedikit apa yang salah:\n\n[PASTE KODE ERROR DI SINI]')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
+                        <span>🔧</span> Fix Error
+                    </button>
+                    <button onclick="insertPrompt('Buatkan Game Snake klasik menggunakan HTML, CSS (Tailwind), dan Javascript dalam 1 file utuh. Beri warna hijau neon bergaya retro dan pastikan kontrol tombol arah berfungsi.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
+                        <span>🐍</span> Game Snake
+                    </button>
+                    <button onclick="insertPrompt('Buatkan aplikasi To-Do List yang estetik dan minimalis dalam 1 file HTML. Gunakan Tailwind CSS. Fitur: tambah tugas, coret tugas selesai, dan simpan di localStorage.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
+                        <span>📝</span> To-Do Estetik
+                    </button>
+                    
+                    <!-- Tambahan Tombol Template Baru -->
+                    <button onclick="insertPrompt('Buatkan Landing Page jualan produk digital (E-book) menggunakan Tailwind CSS dalam 1 file HTML. Harus ada Hero Section, Fitur Utama, Testimoni, dan Tombol Beli bergaya modern dan responsif.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
+                        <span>🚀</span> Landing Page
+                    </button>
+                    <button onclick="insertPrompt('Buatkan template UI Dashboard Admin modern menggunakan Tailwind CSS dalam 1 file HTML. Harus ada Sidebar menu, Header, 3 Kartu Statistik (Pengguna, Pendapatan, Trafik), dan 1 Tabel Data Dummy.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
+                        <span>📊</span> Dashboard Admin
+                    </button>
+                    <button onclick="insertPrompt('Buatkan aplikasi Kalkulator Pengeluaran Harian menggunakan HTML, Tailwind CSS, dan JavaScript dalam 1 file utuh. Harus bisa input nominal, tampilkan total, dan berikan desain Glassmorphism elegan.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
+                        <span>🧮</span> Kalkulator
+                    </button>
+                </div>
+
+                <!-- Chat Form -->
+                <form id="chatForm" onsubmit="sendMessage(event)" class="relative flex items-end shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 transition-all focus-within:ring-2 focus-within:ring-violet-500/50 focus-within:border-violet-500">
+                    <textarea 
+                        id="chatInput"
+                        rows="1"
+                        placeholder="Ketik instruksi untuk Arsitek AI..."
+                        class="w-full bg-transparent text-slate-800 dark:text-slate-100 p-4 max-h-40 min-h-[56px] resize-none outline-none text-[15px] placeholder-slate-400 dark:placeholder-slate-500"
+                        onkeydown="checkSubmit(event)"
+                        oninput="this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 160) + 'px'"
+                    ></textarea>
+                    
+                    <button type="submit" id="sendBtn" class="m-2 p-2.5 bg-slate-900 hover:bg-violet-600 dark:bg-white dark:text-slate-900 dark:hover:bg-violet-400 text-white rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
+                <div class="text-center mt-2">
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Shift + Enter untuk baris baru. AI dapat membuat kesalahan, periksa kembali kodenya.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SETTINGS MODAL (Glassmorphism) -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/20 dark:bg-slate-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    ⚙️ Pengaturan API
+                </h3>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">✕</button>
+            </div>
+            
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Provider AI</label>
+                    <select id="apiProvider" onchange="handleProviderChange()" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm focus:border-violet-500 outline-none transition-all text-slate-700 dark:text-slate-200 cursor-pointer">
+                        <option value="gemini">Google Gemini (Disarankan)</option>
+                        <option value="groq">Groq (Super Cepat)</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="custom">Custom URL</option>
+                    </select>
+                </div>
+
+                <div id="customUrlContainer" class="hidden">
+                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Custom Base URL</label>
+                    <input type="text" id="apiBaseUrl" placeholder="https://api.openai.com/v1" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm focus:border-violet-500 outline-none transition-all text-slate-700 dark:text-slate-200">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>API Key (Mode Estafet)</span>
+                        <span class="text-[10px] text-violet-600 dark:text-violet-400 font-normal lowercase bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded">Bisa > 1 key</span>
+                    </label>
+                    <textarea id="apiKeys" rows="3" placeholder="Masukkan sk-...&#10;Paste key ke-2 di baris baru (jika ada)...&#10;Sistem otomatis estafet jika key 1 limit!" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm focus:border-violet-500 outline-none transition-all text-slate-700 dark:text-slate-200 font-mono resize-none leading-relaxed"></textarea>
+                    
+                    <!-- Pesan Edukasi API Key -->
+                    <div class="mt-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex gap-3 items-start">
+                        <span class="text-amber-500 text-lg leading-none">💡</span>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                            <strong class="text-amber-600 dark:text-amber-400/90">Tips Kuota:</strong> Anda dapat menggunakan API Key gratis, namun jika terjadi <em class="dark:text-slate-300">Rate Limit</em> berulang, disarankan menggunakan <strong class="text-violet-600 dark:text-violet-400">API Key Berbayar</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Pilih Model Utama</label>
+                    <select id="apiModel" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm focus:border-violet-500 outline-none transition-all text-slate-700 dark:text-slate-200 cursor-pointer">
+                        <optgroup label="Google Gemini">
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Gratis & Pintar)</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                        </optgroup>
+                        <optgroup label="Groq">
+                            <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile</option>
+                            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                        </optgroup>
+                        <optgroup label="OpenRouter (Ketik Manual di Bawah Jika Beda)">
+                            <option value="deepseek/deepseek-chat">DeepSeek Chat</option>
+                            <option value="google/gemini-2.5-flash:free">Gemini 2.5 Flash (Free via OR)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between gap-3">
+                <!-- Tombol Reset (Sesuai Permintaan Kakak) -->
+                <button id="resetBtn" onclick="handleReset()" class="px-4 py-2 rounded-xl text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors flex items-center gap-2" title="Hapus semua riwayat chat & pengaturan">
+                    <span>🗑️</span> <span id="resetText">Reset App</span>
+                </button>
+                <div class="flex gap-3">
+                    <button onclick="closeSettings()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                    <button onclick="saveSettings()" class="px-5 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-md transition-all active:scale-95">Simpan</button>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white dark:bg-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl text-sm font-medium transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+        <span id="toastIcon">✅</span>
+        <span id="toastMsg">Tersimpan</span>
+    </div>
+
     <script>
-        // --- Konfigurasi Game ---
-        const GRID_SIZE = 20;
-        const INITIAL_SNAKE_SPEED = 200; // Milidetik per update
-        const MIN_SNAKE_SPEED = 50; // Kecepatan minimum ular
-        const SPEED_INCREASE_AMOUNT = 8; // Berapa ms kecepatan bertambah setiap kali makan
+        // Logika Tema Light/Dark
+        const htmlElement = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        let isDarkMode = true; // Default Dark Mode
 
-        // --- Elemen DOM ---
-        const gameBoard = document.getElementById('game-board');
-        const scoreDisplay = document.getElementById('current-score');
-        const gameOverScreen = document.getElementById('game-over-screen');
-        const finalScoreDisplay = document.getElementById('final-score');
-        const restartButton = document.getElementById('restart-button');
-
-        // --- Variabel Game State ---
-        let snake = [];
-        let food = {};
-        let dx = 0; // Perubahan x (arah horizontal)
-        let dy = 0; // Perubahan y (arah vertikal)
-        let score = 0;
-        let gameInterval;
-        let gameSpeed = INITIAL_SNAKE_SPEED;
-        let isChangingDirection = false; // Mencegah perubahan arah ganda dalam satu tick game
-        let isGameOver = false;
-
-        // --- Fungsi Utama Game ---
-
-        // Inisialisasi atau Reset Game
-        function initGame() {
-            // Reset state
-            snake = [
-                { x: Math.floor(GRID_SIZE / 2), y: Math.floor(GRID_SIZE / 2) }, // Kepala ular di tengah
-                { x: Math.floor(GRID_SIZE / 2), y: Math.floor(GRID_SIZE / 2) + 1 } // Tubuh ular
-            ];
-            food = {};
-            dx = 0;
-            dy = -1; // Awalnya bergerak ke atas
-            score = 0;
-            gameSpeed = INITIAL_SNAKE_SPEED;
-            isChangingDirection = false;
-            isGameOver = false;
-
-            scoreDisplay.textContent = score;
-            gameOverScreen.classList.add('hidden'); // Sembunyikan layar game over
-
-            createBoard();
-            generateFood();
-            draw();
-            startGameLoop();
+        // Cek LocalStorage untuk tema
+        if (localStorage.getItem('theme') === 'light') {
+            isDarkMode = false;
+            htmlElement.classList.remove('dark');
+            themeToggleBtn.innerText = '☀️';
+        } else {
+            themeToggleBtn.innerText = '🌙';
         }
 
-        // Membuat papan game (div-div kotak)
-        function createBoard() {
-            gameBoard.innerHTML = ''; // Bersihkan papan sebelumnya
-            gameBoard.style.setProperty('--grid-size', GRID_SIZE); // Atur variabel CSS
-            gameBoard.style.setProperty('--cell-size', ${CELL_SIZE}px);
-
-            for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('game-cell');
-                gameBoard.appendChild(cell);
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.innerText = '🌙';
+            } else {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.innerText = '☀️';
             }
         }
 
-        // Mengambil elemen sel game berdasarkan koordinat (x, y)
-        function getGameCell(x, y) {
-            // Flatten 2D coords to 1D index
-            return gameBoard.children[y * GRID_SIZE + x];
+        // State Global Aplikasi
+        let chatSessions = JSON.parse(localStorage.getItem('sessions')) || [];
+        let currentSessionId = localStorage.getItem('currentSessionId') || null;
+
+        // Default API Setup dengan MULTI-BRANKAS KEY
+        let settings = JSON.parse(localStorage.getItem('apiSettings')) || {
+            provider: 'gemini',
+            baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+            apiKeys: [], 
+            model: 'gemini-2.5-flash',
+            providerKeys: {
+                gemini: [],
+                groq: [],
+                openrouter: [],
+                openai: [],
+                custom: []
+            }
+        };
+
+        // Migrasi Data Lama ke Sistem Multi-Brankas
+        if (!settings.providerKeys) {
+            settings.providerKeys = {
+                gemini: settings.provider === 'gemini' ? settings.apiKeys : [],
+                groq: settings.provider === 'groq' ? settings.apiKeys : [],
+                openrouter: settings.provider === 'openrouter' ? settings.apiKeys : [],
+                openai: settings.provider === 'openai' ? settings.apiKeys : [],
+                custom: settings.provider === 'custom' ? settings.apiKeys : []
+            };
+            localStorage.setItem('apiSettings', JSON.stringify(settings));
         }
 
-        // Menggambar ular dan makanan di papan
-        function draw() {
-            // Bersihkan semua sel dari kelas snake-cell dan food-cell
-            document.querySelectorAll('.snake-cell').forEach(cell => cell.classList.remove('snake-cell'));
-            document.querySelectorAll('.food-cell').forEach(cell => cell.classList.remove('food-cell'));
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettingsToInputs();
+            if (chatSessions.length === 0) {
+                startNewSession(false);
+            } else {
+                if (!currentSessionId) currentSessionId = chatSessions[0].id;
+                renderSessionList();
+                loadChat(currentSessionId);
+            }
+        });
 
-            // Gambar ular
-            snake.forEach(segment => {
-                const cell = getGameCell(segment.x, segment.y);
-                if (cell) cell.classList.add('snake-cell');
+        // Update Judul Aplikasi Dinamis
+        function updateDynamicTitle(providerParam) {
+            const headerTitle = document.getElementById('headerModelName');
+            const provider = providerParam || settings.provider;
+            
+            if (provider === 'gemini') {
+                headerTitle.innerText = '✨ GEMINI (MODE DEWA)';
+            } else if (provider === 'groq') {
+                headerTitle.innerText = '🏎️ GROQ (MODE KILAT)';
+            } else {
+                headerTitle.innerText = '👑 MODE DEWA';
+            }
+        }
+
+        // Logika Keamanan Ganda Tombol Reset App
+        let resetClickCount = 0;
+        let resetTimer;
+        function handleReset() {
+            const btnText = document.getElementById('resetText');
+            if (resetClickCount === 0) {
+                resetClickCount = 1;
+                btnText.innerText = "Yakin Hapus?";
+                
+                // Reset kembali ke tulisan awal jika tidak diklik lagi dalam 3 detik
+                resetTimer = setTimeout(() => {
+                    resetClickCount = 0;
+                    btnText.innerText = "Reset App";
+                }, 3000);
+            } else {
+                // Konfirmasi kedua -> Eksekusi Reset
+                clearTimeout(resetTimer);
+                localStorage.clear();
+                window.location.reload();
+            }
+        }
+
+        function pasteMantraDewa() {
+            const input = document.getElementById('chatInput');
+            const mantra = `Bertindaklah sebagai Senior Full-Stack Web Architect dengan spesialisasi Single-File Web Apps. Saya ingin Anda membuatkan aplikasi web dengan kepatuhan 100% pada instruksi teknis di bawah ini tanpa toleransi kesalahan:
+
+1. KEWAJIBAN SINGLE-FILE (ONE-FILE POLICY):
+   - Gabungkan seluruh HTML, CSS, JavaScript, dan data dummy ke dalam SATU file index.html saja.
+   - TIDAK BOLEH menyuruh saya membuat file terpisah.
+   - Simpan data JSON sebagai variabel konstan 'const' di dalam tag <script>.
+
+2. ATURAN SINTAKSIS JAVASCRIPT KETAT:
+   - WAJIB gunakan backtick ( \` ) secara sempurna untuk HTML dinamis.
+   - SEMUA fungsi JavaScript harus ditulis lengkap secara UTUH.
+
+3. ATURAN STYLING DAN TAMPILAN MODERN:
+   - WAJIB gunakan Tailwind CSS via CDN dengan tag <script> di dalam <head>.
+   - Desain UI super mewah, elegan, minimalis (Apple/Vercel style).
+   - Pastikan layout responsif.
+
+4. DESAIN INTERAKTIF DAN ERROR HANDLING:
+   - Semua tombol wajib memiliki event listener.
+   - Hindari fungsi pop-up bawaan browser.
+
+Berdasarkan aturan disiplin di atas, tolong buatkan aplikasi berikut secara utuh dan lengkap dari <!DOCTYPE html> sampai </html>:
+
+[TULIS PERMINTAAN APLIKASI KAKAK DI SINI]`;
+            input.value = mantra;
+            input.focus();
+            input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+        }
+
+        function insertPrompt(text) {
+            const input = document.getElementById('chatInput');
+            input.value = text;
+            input.focus();
+            input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+        }
+
+        function checkSubmit(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('chatForm').requestSubmit();
+            }
+        }
+
+        function loadSettingsToInputs() {
+            document.getElementById('apiProvider').value = settings.provider;
+            document.getElementById('apiBaseUrl').value = settings.baseUrl || '';
+            // Load kunci sesuai provider aktif dari brankas
+            document.getElementById('apiKeys').value = (settings.providerKeys[settings.provider] || []).join('\n');
+            document.getElementById('apiModel').value = settings.model;
+            updateDynamicTitle();
+            toggleCustomUrl();
+        }
+
+        function handleProviderChange() {
+            toggleCustomUrl();
+            const provider = document.getElementById('apiProvider').value;
+            
+            // Panggil kunci dari brankas sesuai provider
+            document.getElementById('apiKeys').value = (settings.providerKeys[provider] || []).join('\n');
+
+            // Ganti Model otomatis biar Kakak gak repot
+            const modelSelect = document.getElementById('apiModel');
+            if(provider === 'gemini') modelSelect.value = 'gemini-2.5-flash';
+            if(provider === 'groq') modelSelect.value = 'llama-3.3-70b-versatile';
+        }
+
+        function toggleCustomUrl() {
+            const p = document.getElementById('apiProvider').value;
+            const c = document.getElementById('customUrlContainer');
+            c.style.display = (p === 'custom') ? 'block' : 'none';
+        }
+
+        function openSettings() {
+            // Reset status tombol reset setiap buka modal
+            resetClickCount = 0;
+            document.getElementById('resetText').innerText = "Reset App";
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            const provider = document.getElementById('apiProvider').value;
+            let baseUrl = 'https://openrouter.ai/api/v1';
+            
+            if (provider === 'openai') {
+                baseUrl = 'https://api.openai.com/v1';
+            } else if (provider === 'groq') {
+                baseUrl = 'https://api.groq.com/openai/v1';
+            } else if (provider === 'gemini') {
+                baseUrl = 'https://generativelanguage.googleapis.com/v1beta/openai';
+            } else if (provider === 'custom') {
+                baseUrl = document.getElementById('apiBaseUrl').value;
+            }
+
+            const keysInput = document.getElementById('apiKeys').value;
+            const keysArray = keysInput.split('\n').map(k => k.trim()).filter(k => k.length > 0);
+
+            // Simpan kunci ke dalam brankas khusus provider tersebut
+            settings.providerKeys[provider] = keysArray;
+
+            settings.provider = provider;
+            settings.baseUrl = baseUrl;
+            settings.apiKeys = keysArray; 
+            settings.model = document.getElementById('apiModel').value;
+
+            localStorage.setItem('apiSettings', JSON.stringify(settings));
+            updateDynamicTitle(provider);
+            
+            closeSettings();
+            showToast("Pengaturan berhasil disimpan!");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 3000);
+        }
+
+        function startNewSession(render = true) {
+            const newId = 'sess_' + Date.now();
+            const newSession = {
+                id: newId,
+                title: 'Chat Baru',
+                date: new Date().toISOString(),
+                messages: []
+            };
+            chatSessions.unshift(newSession);
+            currentSessionId = newId;
+            localStorage.setItem('sessions', JSON.stringify(chatSessions));
+            localStorage.setItem('currentSessionId', currentSessionId);
+            
+            if (render) {
+                renderSessionList();
+                loadChat(newId);
+            }
+        }
+
+        function renderSessionList() {
+            const list = document.getElementById('sessionList');
+            list.innerHTML = '';
+            chatSessions.forEach(sess => {
+                const isActive = sess.id === currentSessionId;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-4 py-3 rounded-xl text-sm transition-all truncate ${isActive ? 'bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50'}`;
+                btn.innerText = sess.title;
+                btn.onclick = () => {
+                    currentSessionId = sess.id;
+                    localStorage.setItem('currentSessionId', currentSessionId);
+                    renderSessionList();
+                    loadChat(sess.id);
+                };
+                list.appendChild(btn);
             });
-
-            // Gambar makanan
-            const foodCell = getGameCell(food.x, food.y);
-            if (foodCell) foodCell.classList.add('food-cell');
         }
 
-        // Memperbarui posisi game (ular bergerak, makan, dll.)
-        function updateGame() {
-            if (isGameOver) return;
+        function loadChat(sessionId) {
+            const session = chatSessions.find(s => s.id === sessionId);
+            const msgList = document.getElementById('messageList');
+            const welcome = document.getElementById('welcomeState');
+            
+            msgList.innerHTML = '';
+            if (session && session.messages.length > 0) {
+                welcome.style.display = 'none';
+                session.messages.forEach(m => appendMessageBubble(m.role, m.content, false));
+            } else {
+                welcome.style.display = 'flex';
+            }
+            
+            const chatArea = document.getElementById('chatArea');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
 
-            isChangingDirection = false; // Izinkan perubahan arah baru untuk tick berikutnya
+        async function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
 
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            input.value = '';
+            input.style.height = 'auto';
+            document.getElementById('welcomeState').style.display = 'none';
 
-            // Deteksi tabrakan
-            if (checkCollision(head)) {
-                endGame();
+            appendMessageBubble('user', text);
+            
+            let sessionIndex = chatSessions.findIndex(s => s.id === currentSessionId);
+            if (sessionIndex !== -1) {
+                if (chatSessions[sessionIndex].messages.length === 0) {
+                    chatSessions[sessionIndex].title = text.substring(0, 25) + '...';
+                    renderSessionList();
+                }
+                chatSessions[sessionIndex].messages.push({ role: 'user', content: text });
+                localStorage.setItem('sessions', JSON.stringify(chatSessions));
+            }
+
+            const chatArea = document.getElementById('chatArea');
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            if (!settings.apiKeys || settings.apiKeys.length === 0) {
+                showTypingIndicator(true);
+                setTimeout(() => {
+                    showTypingIndicator(false);
+                    const mockReply = "Halo, Kak! \n\n**Namun, saya mendeteksi API Key di menu Settings masih kosong!**\nSilakan klik tombol **Pengaturan API & Model** di menu samping.";
+                    appendMessageBubble('assistant', mockReply);
+                    
+                    if (sessionIndex !== -1) {
+                        chatSessions[sessionIndex].messages.push({ role: 'assistant', content: mockReply });
+                        localStorage.setItem('sessions', JSON.stringify(chatSessions));
+                    }
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }, 1000);
                 return;
             }
 
-            snake.unshift(head); // Tambahkan kepala baru
+            showTypingIndicator(true);
 
-            // Cek apakah ular makan makanan
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                scoreDisplay.textContent = score;
-                generateFood();
-                increaseSpeed();
+            try {
+                const requestMessages = chatSessions[sessionIndex].messages.map(m => ({
+                    role: m.role,
+                    content: m.content
+                }));
+
+                let apiResponse = null;
+                let lastErrorMsg = "";
+                let successfulKeyIndex = -1;
+
+                // LOOPIING FITUR ESTAFET (AUTO-SWITCH API KEY)
+                for (let i = 0; i < settings.apiKeys.length; i++) {
+                    const currentKey = settings.apiKeys[i];
+                    
+                    try {
+                        const response = await fetch(`${settings.baseUrl}/chat/completions`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${currentKey}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                model: settings.model,
+                                messages: requestMessages,
+                                stream: false 
+                            })
+                        });
+
+                        if (response.ok) {
+                            apiResponse = await response.json();
+                            successfulKeyIndex = i;
+                            break; 
+                        } else {
+                            const errData = await response.json().catch(()=>({}));
+                            lastErrorMsg = errData?.error?.message || `HTTP Error ${response.status}`;
+                            console.warn(`Key ke-${i+1} gagal. Beralih ke key selanjutnya...`);
+                            continue; 
+                        }
+                    } catch (fetchError) {
+                        lastErrorMsg = fetchError.message;
+                        console.warn(`Key ke-${i+1} error koneksi. Beralih ke key selanjutnya...`);
+                        continue;
+                    }
+                }
+
+                showTypingIndicator(false);
+
+                if (!apiResponse) {
+                    throw new Error(`Semua API Key kehabisan kuota atau bermasalah.\n\n*Error Terakhir:*\n\`${lastErrorMsg}\``);
+                }
+
+                const aiReplyText = apiResponse.choices[0].message.content;
+
+                let prefixInfo = "";
+                if (successfulKeyIndex > 0) {
+                    prefixInfo = `> 🔄 *Info: Estafet otomatis beralih ke API Key ke-${successfulKeyIndex + 1}*\n\n`;
+                }
+
+                appendMessageBubble('assistant', prefixInfo + aiReplyText);
+
+                if (sessionIndex !== -1) {
+                    chatSessions[sessionIndex].messages.push({ role: 'assistant', content: aiReplyText });
+                    localStorage.setItem('sessions', JSON.stringify(chatSessions));
+                }
+
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+            } catch (error) {
+                showTypingIndicator(false);
+                const errorMsg = `❌ **Error Sistem Estafet:**\n\n${error.message}`;
+                appendMessageBubble('assistant', errorMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+
+        function showTypingIndicator(show) {
+            const ind = document.getElementById('typingIndicator');
+            const btn = document.getElementById('sendBtn');
+            const input = document.getElementById('chatInput');
+            if (show) {
+                ind.classList.remove('hidden');
+                btn.disabled = true;
+                input.disabled = true;
             } else {
-                snake.pop(); // Hapus ekor jika tidak makan
-            }
-
-            draw();
-        }
-
-        // Deteksi tabrakan (dinding atau tubuh sendiri)
-        function checkCollision(head) {
-            // Tabrakan dengan dinding
-            if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
-                return true;
-            }
-
-            // Tabrakan dengan tubuh sendiri (mulai dari segmen ke-4 untuk menghindari tabrakan dengan "leher")
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        // Menghasilkan posisi makanan baru secara acak
-        function generateFood() {
-            let newFoodPos;
-            while (true) {
-                newFoodPos = {
-                    x: Math.floor(Math.random() * GRID_SIZE),
-                    y: Math.floor(Math.random() * GRID_SIZE)
-                };
-                // Pastikan makanan tidak muncul di atas ular
-                const collisionWithSnake = snake.some(segment =>
-                    segment.x === newFoodPos.x && segment.y === newFoodPos.y
-                );
-                if (!collisionWithSnake) {
-                    food = newFoodPos;
-                    break;
-                }
+                ind.classList.add('hidden');
+                btn.disabled = false;
+                input.disabled = false;
+                input.focus();
             }
         }
 
-        // Mengatur dan memulai loop game
-        function startGameLoop() {
-            clearInterval(gameInterval); // Hentikan interval sebelumnya jika ada
-            gameInterval = setInterval(updateGame, gameSpeed);
-        }
+        function appendMessageBubble(role, content, animate = true) {
+            const list = document.getElementById('messageList');
+            const div = document.createElement('div');
+            
+            let formattedContent = content
+                .replace(/</g, "&lt;").replace(/>/g, "&gt;") 
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+                .replace(/\n/g, '<br/>'); 
+                
+            formattedContent = formattedContent.replace(/```(.*?)<br\/>([\s\S]*?)```/g, '<pre class="text-sm"><code>$2</code></pre>');
+            formattedContent = formattedContent.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-        // Meningkatkan kecepatan ular
-        function increaseSpeed() {
-            gameSpeed = Math.max(MIN_SNAKE_SPEED, gameSpeed - SPEED_INCREASE_AMOUNT);
-            startGameLoop(); // Restart loop dengan kecepatan baru
-        }
-
-        // Mengakhiri permainan
-        function endGame() {
-            isGameOver = true;
-            clearInterval(gameInterval);
-            finalScoreDisplay.textContent = score;
-            gameOverScreen.classList.remove('hidden'); // Tampilkan layar game over
-        }
-
-        // --- Event Listener ---
-
-        // Menangani input keyboard untuk arah
-        document.addEventListener('keydown', handleKeyPress);
-
-        function handleKeyPress(event) {
-            if (isChangingDirection || isGameOver) return; // Abaikan jika sedang ganti arah atau game over
-
-            const key = event.key;
-            // Mencegah ular berbalik arah 180 derajat
-            const goingUp = dy === -1;
-            const goingDown = dy === 1;
-            const goingLeft = dx === -1;
-            const goingRight = dx === 1;
-
-            if (key === 'ArrowUp' && !goingDown) {
-                dx = 0;
-                dy = -1;
-                isChangingDirection = true;
-                event.preventDefault(); // Mencegah scroll halaman
-            } else if (key === 'ArrowDown' && !goingUp) {
-                dx = 0;
-                dy = 1;
-                isChangingDirection = true;
-                event.preventDefault();
-            } else if (key === 'ArrowLeft' && !goingRight) {
-                dx = -1;
-                dy = 0;
-                isChangingDirection = true;
-                event.preventDefault();
-            } else if (key === 'ArrowRight' && !goingLeft) {
-                dx = 1;
-                dy = 0;
-                isChangingDirection = true;
-                event.preventDefault();
+            if (role === 'user') {
+                div.className = 'flex items-end justify-end gap-3 ' + (animate ? 'animate-[slideUp_0.3s_ease-out]' : '');
+                div.innerHTML = `
+                    <div class="bg-gradient-to-br from-violet-600 to-indigo-600 text-white p-4 rounded-2xl rounded-br-sm shadow-md max-w-[85%]">
+                        <p class="leading-relaxed whitespace-pre-wrap">${content}</p>
+                    </div>
+                `;
+            } else {
+                div.className = 'flex items-start gap-4 ' + (animate ? 'animate-[slideUp_0.3s_ease-out]' : '');
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-fuchsia-500 to-violet-500 flex-shrink-0 shadow-md flex items-center justify-center text-white text-xs font-bold">AI</div>
+                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm p-5 rounded-2xl rounded-tl-sm border border-slate-100 dark:border-slate-700/50 shadow-sm max-w-[90%] ai-content text-slate-800 dark:text-slate-200">
+                        <div class="leading-relaxed">${formattedContent}</div>
+                    </div>
+                `;
             }
+            list.appendChild(div);
         }
-
-        // Menangani klik tombol restart
-        restartButton.addEventListener('click', initGame);
-
-        // --- Mulai Game Saat Halaman Dimuat ---
-        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
