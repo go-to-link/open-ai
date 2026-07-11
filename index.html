@@ -20,7 +20,6 @@
             }
         }
         
-        // Cek tema saat pertama dimuat
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
         } else {
@@ -39,7 +38,6 @@
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        /* Custom Markdown Styles */
         .markdown-body pre { background-color: #1e293b !important; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-top: 0.5rem; margin-bottom: 0.5rem; color: #e2e8f0; }
         .markdown-body code { font-family: monospace; font-size: 0.875em; }
         .markdown-body p { margin-bottom: 0.75rem; }
@@ -62,28 +60,20 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <!-- Tombol Bantuan (Panduan) -->
                 <button onclick="toggleOnboarding()" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300" title="Panduan Aplikasi">
                     <span class="text-xl">❓</span>
                 </button>
-                <!-- Tombol Sapu (Clear Chat) -->
                 <button onclick="clearChat()" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300" title="Bersihkan Obrolan">
                     <span class="text-xl">🧹</span>
                 </button>
-                <!-- Tombol Tema -->
                 <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300" title="Ganti Tema">
                     <span id="themeIcon" class="text-xl">☀️</span>
                 </button>
-                <!-- Avatar Pengguna -->
                 <div class="group relative">
                     <button class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 cursor-default" title="Pengguna Aktif">
                         U
                     </button>
-                    <div class="absolute right-0 top-12 w-32 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none text-center">
-                        Pengguna Aktif
-                    </div>
                 </div>
-                <!-- Tombol Pengaturan -->
                 <button onclick="toggleSettings()" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300" title="Pengaturan API">
                     <span class="text-xl">⚙️</span>
                 </button>
@@ -93,8 +83,6 @@
 
     <!-- Main Chat Area -->
     <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col relative">
-        
-        <!-- Welcome Screen -->
         <div id="welcomeScreen" class="flex-1 flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
             <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 rounded-full flex items-center justify-center mb-6 shadow-inner">
                 <span class="text-4xl">👋</span>
@@ -103,40 +91,32 @@
             <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-md">Saya siap membantu merancang, menulis, dan memperbaiki kode aplikasi web Anda hari ini.</p>
         </div>
 
-        <!-- Chat Container (dengan padding bawah lega pb-44) -->
         <div id="chatContainer" class="flex-1 overflow-y-auto space-y-6 pb-44 hidden">
-            <!-- Pesan akan masuk ke sini -->
         </div>
 
         <!-- Input Area Fixed at Bottom -->
         <div class="fixed bottom-0 left-0 right-0 glass-panel border-t pb-4 pt-3 px-4 z-30">
             <div class="max-w-4xl mx-auto">
-                <!-- Quick Actions Row (dengan scrollbar estetik tipis) -->
+                <!-- Quick Actions Row -->
                 <div class="flex gap-2 mb-3 overflow-x-auto pb-2 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+                    
                     <button onclick="pasteMantraDewa()" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-100 to-fuchsia-100 dark:from-violet-500/20 dark:to-fuchsia-500/20 text-violet-700 dark:text-violet-300 hover:from-violet-200 hover:to-fuchsia-200 dark:hover:bg-violet-500/30 text-xs font-semibold rounded-full border border-violet-200 dark:border-violet-500/30 transition-all shadow-sm">
                         <span>👑</span> Mantra Dewa
                     </button>
+                    
+                    <!-- TOMBOL BARU: KOLEKSI MANTRA -->
+                    <button onclick="togglePromptLibrary()" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-500/20 dark:to-orange-500/20 text-amber-700 dark:text-amber-300 hover:from-amber-200 hover:to-orange-200 dark:hover:bg-amber-500/30 text-xs font-semibold rounded-full border border-amber-200 dark:border-amber-500/30 transition-all shadow-sm">
+                        <span>📚</span> Koleksi Mantra
+                    </button>
+
                     <button onclick="insertPrompt('Tolong periksa kode ini dan perbaiki errornya secara utuh. Jelaskan sedikit apa yang salah:\n\n[PASTE KODE ERROR DI SINI]')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
                         <span>🔧</span> Fix Error
                     </button>
                     <button onclick="insertPrompt('Buatkan Game Snake klasik menggunakan HTML, CSS (Tailwind), dan Javascript dalam 1 file utuh. Beri warna hijau neon bergaya retro dan pastikan kontrol tombol arah berfungsi.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
                         <span>🐍</span> Game Snake
                     </button>
-                    <button onclick="insertPrompt('Buatkan aplikasi To-Do List yang estetik dan minimalis dalam 1 file HTML. Gunakan Tailwind CSS. Fitur: tambah tugas, coret tugas selesai, dan simpan di localStorage.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
-                        <span>📝</span> To-Do Estetik
-                    </button>
-                    <button onclick="insertPrompt('Buatkan halaman Biolink (Link-in-bio) estetik untuk profil sosmed menggunakan HTML dan Tailwind CSS dalam 1 file. Harus ada foto profil bulat, nama akun, bio singkat, dan 5 tombol link tautan dengan efek hover animasi bergaya Glassmorphism. Tambahkan juga deretan ikon sosmed di bagian paling bawah.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
-                        <span>🔗</span> Biolink Sosmed
-                    </button>
-                    <button onclick="insertPrompt('Buatkan template UI Dashboard Admin modern menggunakan Tailwind CSS dalam 1 file HTML. Harus ada Sidebar menu, Header, 3 Kartu Statistik (Pengguna, Pendapatan, Trafik), dan 1 Tabel Data Dummy.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
-                        <span>📊</span> Dashboard Admin
-                    </button>
-                    <button onclick="insertPrompt('Buatkan aplikasi Kalkulator Pengeluaran Harian menggunakan HTML, Tailwind CSS, dan JavaScript dalam 1 file utuh. Harus bisa input nominal, tampilkan total, dan berikan desain Glassmorphism elegan.')" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 transition-all shadow-sm">
-                        <span>🧮</span> Kalkulator
-                    </button>
                 </div>
 
-                <!-- Chat Input Form -->
                 <div class="relative flex items-end gap-2 bg-white dark:bg-slate-850 rounded-2xl border border-slate-300 dark:border-slate-700 p-2 shadow-sm focus-within:ring-2 focus-within:ring-violet-500 focus-within:border-transparent transition-all">
                     <textarea id="userInput" rows="1" class="w-full max-h-32 bg-transparent outline-none resize-none py-2 px-3 text-slate-800 dark:text-slate-200 placeholder-slate-400" placeholder="Ketik perintah Anda di sini... (Shift + Enter untuk baris baru)" onkeydown="handleEnter(event)"></textarea>
                     <button onclick="sendMessage()" id="sendBtn" class="bg-violet-600 hover:bg-violet-700 text-white p-3 rounded-xl transition-all shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -146,6 +126,63 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal KOLEKSI MANTRA (BARU) -->
+    <div id="promptLibraryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-850 w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[80vh]" id="promptLibraryBox">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900">
+                <h3 class="text-lg font-bold flex items-center gap-2"><span class="text-amber-500">📚</span> Perpustakaan Mantra</h3>
+                <button onclick="togglePromptLibrary()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <!-- Daftar Mantra (Scrollable) -->
+            <div class="p-4 overflow-y-auto space-y-6">
+                <!-- Kategori: Bisnis & Toko -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Bisnis & Penjualan</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div onclick="insertLibraryPrompt('Buatkan aplikasi Web Toko Online (E-Commerce) Katalog Produk dalam 1 file HTML utuh. Gunakan Tailwind CSS. Harus ada: Header dengan ikon keranjang, Hero section promosi, Grid daftar produk (gambar, harga, tombol Beli), dan fitur keranjang belanja sederhana menggunakan JavaScript.')" class="p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-all group">
+                            <h5 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 flex items-center gap-2">🛒 Web Toko Online</h5>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">Template katalog jualan lengkap dengan fitur keranjang belanja.</p>
+                        </div>
+                        <div onclick="insertLibraryPrompt('Buatkan Halaman Biolink (Link-in-bio) estetik untuk profil Instagram/TikTok jualan. Gunakan Tailwind CSS. Isinya: Foto profil bulat, Nama Bisnis, Deskripsi singkat, 5 Tombol link (WA, Shopee, dll) bergaya Glassmorphism yang beranimasi saat di-hover.')" class="p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-all group">
+                            <h5 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 flex items-center gap-2">🔗 Biolink Jualan</h5>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">Halaman multi-link estetik untuk dipasang di profil sosmed.</p>
+                        </div>
+                        <div onclick="insertLibraryPrompt('Buatkan Aplikasi Kasir POS (Point of Sale) sederhana menggunakan HTML, Tailwind CSS, dan JavaScript dalam 1 file. Layar terbagi dua: kiri daftar menu makanan (bisa di-klik), kanan panel keranjang tagihan yang otomatis menghitung total harga.')" class="p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-all group">
+                            <h5 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 flex items-center gap-2">🧮 Aplikasi Kasir (POS)</h5>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">Sistem kasir penghitung tagihan untuk cafe atau warung.</p>
+                        </div>
+                        <div onclick="insertLibraryPrompt('Buatkan UI Dashboard Admin modern untuk memantau penjualan. Gunakan Tailwind CSS. Harus ada: Sidebar navigasi di kiri, Header pencarian, 4 Kartu Statistik di atas, dan 1 Tabel Riwayat Transaksi. Berikan desain bersih dan profesional.')" class="p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-all group">
+                            <h5 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 flex items-center gap-2">📊 Dashboard Admin</h5>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">Panel admin untuk melihat statistik dan riwayat penjualan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategori: Kreatif & Utilitas -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Kreatif & Tools</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div onclick="insertLibraryPrompt('Buatkan Website Undangan Pernikahan Digital (Digital Wedding Invitation) yang elegan dan romantis dalam 1 file HTML. Gunakan Tailwind CSS. Harus ada: Hero Section dengan nama pasangan, Countdown timer (hitung mundur), Detail Acara (Akad & Resepsi), dan Galeri Foto susunan Masonry.')" class="p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-all group">
+                            <h5 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 flex items-center gap-2">💌 Undangan Digital</h5>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">Website undangan pernikahan elegan dengan fitur hitung mundur.</p>
+                        </div>
+                        <div onclick="insertLibraryPrompt('Buatkan Aplikasi Video Copywriter (Generator Naskah Video TikTok/Reels). Gunakan HTML, Tailwind CSS, dan JS murni. Fitur: User mengetik topik, lalu ada 3 tombol: Generate Hook, Generate Outline, Generate CTA. Hasil muncul di bawahnya dan ada tombol Copy. Desainnya harus estetik modern.')" class="p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-all group">
+                            <h5 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 flex items-center gap-2">✍️ Video Copywriter</h5>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">Tools pembuat naskah otomatis untuk konten kreator.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-center">
+                <p class="text-xs text-slate-500">Pilih salah satu mantra di atas, sistem akan otomatis merakitnya ke kolom chat Anda.</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Settings Modal -->
     <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
@@ -166,27 +203,17 @@
                         <option value="openai">🧠 OpenAI (ChatGPT)</option>
                     </select>
                 </div>
-
                 <div id="customUrlContainer" class="hidden">
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Custom Base URL</label>
                     <input type="text" id="apiBaseUrl" placeholder="https://api.openai.com/v1" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm outline-none transition-all text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent">
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
                         <span>API Key (Mode Estafet)</span>
                         <span class="text-[10px] text-violet-600 dark:text-violet-400 font-normal lowercase bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded">Bisa > 1 key</span>
                     </label>
                     <textarea id="apiKeys" rows="3" placeholder="Masukkan API Key...&#10;Paste key ke-2 di baris baru (jika ada)...&#10;Sistem otomatis estafet jika key 1 limit!" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm outline-none transition-all text-slate-800 dark:text-slate-200 font-mono resize-none leading-relaxed focus:ring-2 focus:ring-violet-500 focus:border-transparent"></textarea>
-                    
-                    <div class="mt-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex gap-3 items-start">
-                        <span class="text-amber-500 text-lg leading-none">💡</span>
-                        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                            <strong class="text-amber-600 dark:text-amber-400/90">Tips Kuota:</strong> Anda dapat menggunakan API Key gratis, namun jika terjadi <em class="text-slate-500 dark:text-slate-300">Rate Limit</em> berulang, disarankan menggunakan <strong class="text-violet-600 dark:text-violet-400">API Key Berbayar</strong> untuk performa stabil.
-                        </p>
-                    </div>
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Pilih Model Utama</label>
                     <input type="text" id="apiModel" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm outline-none transition-all text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent">
@@ -194,11 +221,9 @@
             </div>
             
             <div class="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center">
-                <!-- Tombol Reset App (Sapu Jagat) -->
                 <button onclick="confirmReset()" id="resetBtn" class="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5">
                     <span>🗑️</span> <span id="resetBtnText">Reset App</span>
                 </button>
-                
                 <div class="flex gap-3">
                     <button onclick="toggleSettings()" class="px-5 py-2 text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg text-sm font-medium transition-colors">Batal</button>
                     <button onclick="saveSettings()" class="px-5 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-medium transition-all shadow-md">Simpan</button>
@@ -210,33 +235,23 @@
     <!-- Onboarding / Panduan Modal -->
     <div id="onboardingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-850 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transform scale-95 transition-transform duration-300 relative" id="onboardingBox">
-            
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-500 to-indigo-500"></div>
-            
             <div class="p-8 text-center space-y-4">
-                <div class="w-16 h-16 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
-                    🚀
-                </div>
+                <div class="w-16 h-16 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">🚀</div>
                 <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Selamat Datang di AI Arsitek!</h2>
                 <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     Aplikasi ini dirancang khusus untuk merakit kode secara cepat. Berikut 3 hal yang wajib Anda ketahui:
                 </p>
-
                 <div class="space-y-3 text-left mt-6">
                     <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                         <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2"><span class="text-lg">🔑</span> 1. Mode Estafet API Key</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Buka menu Pengaturan (⚙️). Anda bisa memasukkan <strong>banyak API Key sekaligus</strong> (pisahkan dengan enter). Jika satu kunci terkena limit, sistem otomatis berpindah ke kunci berikutnya.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Buka menu Pengaturan (⚙️). Anda bisa memasukkan <strong>banyak API Key sekaligus</strong>. Jika satu kunci terkena limit, sistem otomatis berpindah ke kunci berikutnya.</p>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-                        <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2"><span class="text-lg">👑</span> 2. Mantra Dewa</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Klik tombol <strong>Mantra Dewa</strong> di deretan menu bawah. Ini adalah instruksi ketat (rahasia) agar AI merakit seluruh aplikasi (HTML, CSS, JS) dalam 1 file utuh dengan desain premium tanpa *error*.</p>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-                        <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2"><span class="text-lg">🧹</span> 3. Sapu Layar vs Reset App</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Gunakan ikon Sapu di kanan atas untuk <strong>membersihkan chat</strong> tanpa menghapus API Key. Gunakan tombol merah Reset App di Pengaturan untuk <strong>menghapus total</strong> (Factory Reset).</p>
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2"><span class="text-lg">👑</span> 2. Mantra Dewa & Koleksi</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Gunakan tombol <strong>Koleksi Mantra</strong> untuk memilih template aplikasi jualan/bisnis, lalu kirimkan agar AI merakit seluruh kodenya dalam 1 file utuh.</p>
                     </div>
                 </div>
-
                 <button onclick="toggleOnboarding()" class="w-full mt-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-violet-500/30">
                     Mengerti, Mulai Coding!
                 </button>
@@ -245,7 +260,6 @@
     </div>
 
     <script>
-        // --- KONFIGURASI DAN STATE ---
         const MANTRA_DEWA = `Bertindaklah sebagai Senior Full-Stack Web Architect dengan spesialisasi Single-File Web Apps. Saya ingin Anda membuatkan aplikasi web dengan kepatuhan 100% pada instruksi teknis di bawah ini tanpa toleransi kesalahan:
 
 1. KEWAJIBAN SINGLE-FILE (ONE-FILE POLICY):
@@ -281,7 +295,6 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
         let resetClickCount = 0;
         let resetTimeout;
 
-        // Elemen DOM
         const ui = {
             chatContainer: document.getElementById('chatContainer'),
             welcomeScreen: document.getElementById('welcomeScreen'),
@@ -301,7 +314,6 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             resetBtnText: document.getElementById('resetBtnText')
         };
 
-        // --- SISTEM TEMA ---
         function toggleTheme() {
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
@@ -320,11 +332,9 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             ui.themeIcon.textContent = isDark ? '☀️' : '🌙';
         }
 
-        // --- MANAJEMEN PENGATURAN ---
         function initSettings() {
             const savedProvider = localStorage.getItem('apiProvider') || 'gemini';
             ui.providerSelect.value = savedProvider;
-            
             handleProviderChange(false);
             
             const savedKeys = localStorage.getItem(`apiKeys_${savedProvider}`) || '';
@@ -341,16 +351,13 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
 
         function handleProviderChange(clearKeys = true) {
             const provider = ui.providerSelect.value;
-            
             if (provider === 'openai') {
                 ui.urlContainer.classList.remove('hidden');
                 ui.urlInput.value = localStorage.getItem('apiBaseUrl') || 'https://api.openai.com/v1';
             } else {
                 ui.urlContainer.classList.add('hidden');
             }
-            
             ui.modelInput.value = DEFAULT_MODELS[provider];
-
             if (clearKeys) {
                 const memoryKeys = localStorage.getItem(`apiKeys_${provider}`) || '';
                 ui.keysInput.value = memoryKeys; 
@@ -362,7 +369,7 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             const keys = ui.keysInput.value.trim();
             
             localStorage.setItem('apiProvider', provider);
-            localStorage.setItem(`apiKeys_${provider}`, keys); // Multi-memory
+            localStorage.setItem(`apiKeys_${provider}`, keys); 
             localStorage.setItem('apiModel', ui.modelInput.value.trim());
             
             if (provider === 'openai') {
@@ -373,7 +380,6 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             toggleSettings();
             currentKeyIndex = 0;
             
-            // Notifikasi kunci kosong tanpa memblokir aplikasi
             if(keys === '') {
                 const originalText = ui.headerSubtitle.textContent;
                 ui.headerSubtitle.textContent = "⚠️ Kunci Kosong!";
@@ -392,7 +398,6 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             }
         }
 
-        // --- SISTEM RESET DAN SAPU ---
         function confirmReset() {
             if (resetClickCount === 0) {
                 resetClickCount = 1;
@@ -423,7 +428,6 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             }
         }
 
-        // --- INTERAKSI UI ---
         function toggleSettings() {
             if (ui.settingsModal.classList.contains('hidden')) {
                 ui.settingsModal.classList.remove('hidden');
@@ -459,6 +463,34 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             }
         }
 
+        // FUNGSI BARU: Buka/Tutup Modal Koleksi Mantra
+        function togglePromptLibrary() {
+            const modal = document.getElementById('promptLibraryModal');
+            const box = document.getElementById('promptLibraryBox');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    box.classList.remove('scale-95');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                box.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // FUNGSI BARU: Masukkan Mantra dari Library
+        function insertLibraryPrompt(text) {
+            togglePromptLibrary();
+            // Otomatis gabungkan Mantra Dewa dengan Pilihan Spesifik
+            ui.userInput.value = MANTRA_DEWA + "\n\n" + text;
+            adjustTextareaHeight();
+            ui.userInput.focus();
+        }
+
         function adjustTextareaHeight() {
             ui.userInput.style.height = 'auto';
             ui.userInput.style.height = Math.min(ui.userInput.scrollHeight, 128) + 'px';
@@ -488,9 +520,7 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             ui.userInput.focus();
         }
 
-        // --- SISTEM RENDER PESAN ---
         function appendMessage(role, text) {
-            // PERBAIKAN BUG: Langsung sembunyikan Welcome Screen & tampilkan Chat tanpa syarat
             ui.welcomeScreen.classList.add('hidden');
             ui.chatContainer.classList.remove('hidden');
 
@@ -507,11 +537,8 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             const bubble = document.createElement('div');
             bubble.className = `p-4 rounded-2xl w-full ${role === 'user' ? 'bg-violet-600 text-white rounded-tr-sm' : 'glass-panel text-slate-800 dark:text-slate-200 rounded-tl-sm markdown-body'}`;
             
-            // PENGAMANAN CRITICAL (HTML Escaper):
-            // Mencegah kode balasan AI merusak layout web chat utama
             let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-            // Basic Markdown Parsing yang sudah aman
+            
             let parsedText = safeText
                 .replace(/```(html|css|javascript|js)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
                 .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -553,7 +580,6 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             if (el) el.remove();
         }
 
-        // --- SISTEM ESTAFET API ---
         function getKeys() {
             const provider = localStorage.getItem('apiProvider') || 'gemini';
             const keysText = localStorage.getItem(`apiKeys_${provider}`) || '';
@@ -674,12 +700,10 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             }
         }
 
-        // --- INISIALISASI AWAL ---
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             initSettings();
             
-            // Munculkan Onboarding Otomatis
             if (!localStorage.getItem('hasSeenOnboarding')) {
                 setTimeout(toggleOnboarding, 500);
             }
