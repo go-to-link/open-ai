@@ -330,8 +330,15 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
             // Reset index estafet
             currentKeyIndex = 0;
             
+            // Ganti fungsi alert() bawaan browser dengan notifikasi visual agar tidak diblokir
             if(keys === '') {
-                alert(`Mohon isi API Key untuk ${provider.toUpperCase()} agar aplikasi bisa berjalan.`);
+                const originalText = ui.headerSubtitle.textContent;
+                ui.headerSubtitle.textContent = "⚠️ Kunci Kosong!";
+                ui.headerSubtitle.classList.add('text-rose-500');
+                setTimeout(() => {
+                    ui.headerSubtitle.textContent = originalText;
+                    ui.headerSubtitle.classList.remove('text-rose-500');
+                }, 3000);
             }
         }
 
@@ -555,8 +562,15 @@ Buatkan aplikasi berikut secara utuh dari <!DOCTYPE html> sampai </html>:
 
             const keys = getKeys();
             if (keys.length === 0) {
-                alert("Silakan masukkan API Key di menu Pengaturan (⚙️) terlebih dahulu!");
-                toggleSettings();
+                // Buang alert() dan ganti dengan pesan langsung ke layar chat
+                ui.userInput.value = '';
+                appendMessage('user', text); // Tetap tampilkan apa yang diketik
+                appendMessage('assistant', '⚠️ **Akses Ditolak:** Anda belum memasukkan API Key. Silakan buka menu Pengaturan (⚙️) untuk memasukkan kunci rahasia Anda.');
+                
+                // Buka modal pengaturan secara otomatis
+                if (ui.settingsModal.classList.contains('hidden')) {
+                    toggleSettings();
+                }
                 return;
             }
 
